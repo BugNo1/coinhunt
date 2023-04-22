@@ -7,3 +7,6 @@
 [submodule "common-library"]
 	path = common-library
 	url = git@github.com:BugNo1/common-library.git
+[submodule "QJoysticks"]
+	path = QJoysticks
+	url = git@github.com:alex-spataru/QJoysticks.git
