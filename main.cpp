@@ -1,22 +1,55 @@
-#include <QGuiApplication>
+#include <QApplication>
 #include <QQmlApplicationEngine>
+#include <QQmlContext>
 
+#include <QJoysticks.h>
+#include "bugmodel.h"
+#include "common-library/gamedata.h"
+#include "common-library/player_tablemodel.h"
+#include "common-library/mouse_event_filter.h"
 
 int main(int argc, char *argv[])
 {
+    qmlRegisterType<BugModel, 1>("BugModel", 1, 0, "BugModel");
+    qmlRegisterType<GameData, 1>("GameData", 1, 0, "GameData");
+    qmlRegisterType<Player, 1>("Player", 1, 0, "Player");
+    qmlRegisterType<PlayerTableModel, 1>("PlayerItemModel", 1, 0, "PlayerItemModel");
+
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 #endif
-    QGuiApplication app(argc, argv);
+
+    QApplication app(argc, argv);
 
     QQmlApplicationEngine engine;
-    const QUrl url(QStringLiteral("qrc:/main.qml"));
-    QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,
-                     &app, [url](QObject *obj, const QUrl &objUrl) {
-        if (!obj && url == objUrl)
-            QCoreApplication::exit(-1);
-    }, Qt::QueuedConnection);
-    engine.load(url);
+
+    engine.addImportPath("qrc:/");
+
+    QJoysticks *instance = QJoysticks::getInstance();
+    engine.rootContext()->setContextProperty("QJoysticks", instance);
+
+    BugModel* bugmodel1 = new BugModel();
+    engine.rootContext()->setContextProperty("BugModel1", bugmodel1);
+
+    BugModel* bugmodel2 = new BugModel();
+    engine.rootContext()->setContextProperty("BugModel2", bugmodel2);
+
+    PlayerTableModel* playerItemModel = new PlayerTableModel();
+    engine.rootContext()->setContextProperty("HighscoreData", QVariant::fromValue(playerItemModel));
+
+    GameData* gamedata = new GameData(playerItemModel);
+    engine.rootContext()->setContextProperty("GameData", gamedata);
+
+    QString gifpath = "file://" + QCoreApplication::applicationDirPath() + "/gif/";
+    engine.rootContext()->setContextProperty("gifPath", gifpath);
+
+    QString bgpath = "file://" + QCoreApplication::applicationDirPath() + "/bg/";
+    engine.rootContext()->setContextProperty("bgPath", bgpath);
+
+    engine.load(QUrl(QStringLiteral("qrc:/qml/Main.qml")));
+
+    MouseEventFilter* mouseEventFilter = new MouseEventFilter();
+    app.installEventFilter(mouseEventFilter);
 
     return app.exec();
 }
