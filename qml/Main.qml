@@ -31,7 +31,7 @@ Window {
     }
 
     function setBackground() {
-        background.source = bgPath + "bg" + (Math.round(Math.random() * 11) + 1).toString().padStart(2, "0") + ".jpg"
+        background.source = bgPath + "bg" + (Math.round(Math.random() * 18) + 1).toString().padStart(2, "0") + ".jpg"
     }
 
     Bug {
@@ -49,7 +49,7 @@ Window {
     Bug {
         id: bug2
         bugModel: BugModel2
-        sourceFiles: ["../media/ladybug-up-blue.png", "../media/ladybug-middle-blue.png", "../media/ladybug-down-blue.png" ]
+        sourceFiles: ["../coinhunt-media/robobug-up-red.png", "../coinhunt-media/robobug-middle-red.png", "../coinhunt-media/robobug-down-red.png" ]
         Connections {
             target: QJoysticks
             function onAxisChanged() {

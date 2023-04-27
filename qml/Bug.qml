@@ -4,10 +4,10 @@ import QtQuick.Shapes 1.15
 
 Item {
     id: bug
-    width: 55
-    height: 50
+    width: 70
+    height: 55
 
-    property var sourceFiles: ["../media/ladybug-up.png", "../media/ladybug-middle.png", "../media/ladybug-down.png" ]
+    property var sourceFiles: ["../coinhunt-media/robobug-up.png", "../coinhunt-media/robobug-middle.png", "../coinhunt-media/robobug-down.png" ]
     property var bugModel
 
     // controller values - used as speed values for movement
@@ -68,7 +68,7 @@ Item {
             // must be here to be able to set-back the image when the bug stops
             changeImage()
             if (xAxisValue != 0.0 || yAxisValue != 0.0) {
-                bugSound.source = "../media/bug-walk.wav"
+                bugSound.source = "../coinhunt-media/bug-walk.wav"
                 bugSound.play()
                 move()
                 rotate()
@@ -163,11 +163,11 @@ Item {
 
     Audio {
         id: bugSound
-        source: "../media/bug-walk.wav"
+        source: "../coinhunt-media/bug-walk.wav"
     }
 
     SoundEffect {
         id: bugHit
-        source: "../media/hit.wav"
+        source: "../coinhunt-media/hit.wav"
     }
 }

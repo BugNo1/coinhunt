@@ -10,3 +10,6 @@
 [submodule "QJoysticks"]
 	path = QJoysticks
 	url = git@github.com:alex-spataru/QJoysticks.git
+[submodule "coinhunt-media"]
+	path = coinhunt-media
+	url = git@github.com:BugNo1/coinhunt-media.git

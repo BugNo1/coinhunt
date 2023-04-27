@@ -29,14 +29,14 @@
         <file>common-media/speed-sign.png</file>
         <file>common-media/win.wav</file>
         <file>common-media/winner.png</file>
-        <file>media/bug-walk.wav</file>
-        <file>media/hit.wav</file>
-        <file>media/ladybug-down-blue.png</file>
-        <file>media/ladybug-down.png</file>
-        <file>media/ladybug-middle-blue.png</file>
-        <file>media/ladybug-middle.png</file>
-        <file>media/ladybug-up-blue.png</file>
-        <file>media/ladybug-up.png</file>
+        <file>coinhunt-media/bug-walk.wav</file>
+        <file>coinhunt-media/hit.wav</file>
         <file>common-qml/ItemSpeed.qml</file>
+        <file>coinhunt-media/robobug-up.png</file>
+        <file>coinhunt-media/robobug-down.png</file>
+        <file>coinhunt-media/robobug-middle.png</file>
+        <file>coinhunt-media/robobug-up-red.png</file>
+        <file>coinhunt-media/robobug-down-red.png</file>
+        <file>coinhunt-media/robobug-middle-red.png</file>
     </qresource>
 </RCC>
