@@ -38,5 +38,9 @@
         <file>coinhunt-media/robobug-up-red.png</file>
         <file>coinhunt-media/robobug-down-red.png</file>
         <file>coinhunt-media/robobug-middle-red.png</file>
+        <file>coinhunt-media/coin.png</file>
+        <file>coinhunt-media/cash-register.wav</file>
+        <file>coinhunt-media/coin-collect.wav</file>
+        <file>qml/Coin.qml</file>
     </qresource>
 </RCC>

@@ -17,6 +17,7 @@ Window {
 
     property var bugs: [bug1, bug2]
     property var collectibleItems: []
+    property var coins: []
     property var overlay
 
     Component.onCompleted: {
@@ -92,11 +93,17 @@ Window {
         }*/
     }
 
+    Audio {
+        id: coinDropSound
+        source: "../coinhunt-media/cash-register.wav"
+    }
+
     // game logic
     property double startTime: 0
     property double currentTime: 0
     property int currentLevel: 0
     property int timeForHuntingAllCoins: 30
+    property int numberOfCoinsPerRound: 50
 
     GameStateMachine {
         id: gameStateMachine
@@ -124,8 +131,8 @@ Window {
 
         overlay = Qt.createQmlObject('import "../common-qml"; GameStartOverlay {}', mainWindow, "overlay")
         overlay.gameName = "Coin Hunt"
-        overlay.player1ImageSource = "../media/ladybug-middle.png"
-        overlay.player2ImageSource = "../media/ladybug-middle-blue.png"
+        overlay.player1ImageSource = "../coinhunt-media/robobug-middle.png"
+        overlay.player2ImageSource = "../coinhunt-media/robobug-middle-red.png"
         overlay.signalStart = gameStateMachine.signalStartCountdown
     }
 
@@ -139,6 +146,8 @@ Window {
 
     function gameStartAction() {
         console.log("Starting game...")
+
+        dropCoins()
 
         startTime = new Date().getTime()
         gameTimer.start()
@@ -192,6 +201,21 @@ Window {
         }*/
     }
 
+    function updateClock() {
+
+    }
+
+    function dropCoins() {
+        coinDropSound.source = ""
+        coinDropSound.source = "../coinhunt-media/cash-register.wav"
+        coinDropSound.play()
+        for (var i = 0; i < numberOfCoinsPerRound; i++) {
+            var newCoin = Qt.createQmlObject('Coin {}', mainWindow, "coins")
+            coins.push(newCoin)
+            newCoin.itemActive = true
+        }
+    }
+
     function onBug1EnabledChanged() {
         /*if (! BugModel1.enabled) {
             GameData.player1.levelAchieved = currentLevel
@@ -236,16 +260,22 @@ Window {
             //bugs[1].bugModel.bugCollision(0, colliding)
         }
 
-        // TODO: bug vs. coin collision
-
-        /*for (var bugIndex = 0; bugIndex < bugs.length; bugIndex++) {
-            for (var birdIndex = 0; birdIndex < birds.length; birdIndex++) {
-                colliding = Functions.detectCollisionCircleCircle(bugs[bugIndex], birds[birdIndex])
-                bugs[bugIndex].bugModel.birdCollision(birdIndex, colliding)
+        // bug vs. coin collision
+        for (var bugIndex = 0; bugIndex < bugs.length; bugIndex++) {
+            for (var coinIndex = 0; coinIndex < coins.length; coinIndex++) {
+                if (coins[coinIndex].itemActive) {
+                    colliding = Functions.detectCollisionCircleCircle(bugs[bugIndex], coins[coinIndex])
+                    if (colliding) {
+                        bugs[bugIndex].bugModel.addCoin()
+                        coins[coinIndex].itemActive = false
+                    }
+                }
             }
-        }*/
+        }
 
         // bug vs. item collision
+        // items: enlarge bug for 10s, stop clock for 10s, turbo speed for 10s
+
         /*for (bugIndex = 0; bugIndex < bugs.length; bugIndex++) {
             if (bugs[bugIndex].bugModel.enabled) {
                 for (var itemIndex = 0; itemIndex < collectibleItems.length; itemIndex++) {

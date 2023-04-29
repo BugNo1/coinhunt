@@ -12,6 +12,7 @@ void BugModel::initialize()
     setActiveBugCollision(false);
     setEnabled(true);
     setSpeed(100);
+    setCoinsCollected(0);
 }
 
 bool BugModel::activeBugCollision()
@@ -36,6 +37,23 @@ void BugModel::bugCollision(int bugId, bool colliding)
     else if (m_activeBugCollision && m_bugId == bugId && ! colliding) {
         setActiveBugCollision(false);
     }
+}
+
+int BugModel::coinsCollected()
+{
+    return m_coins;
+}
+
+void BugModel::setCoinsCollected(int coins)
+{
+    if (coins != m_coins) {
+        m_coins = coins;
+        emit coinsCollectedChanged();
+    }
+}
+
+void BugModel::addCoin() {
+    setCoinsCollected(m_coins + 1);
 }
 
 bool BugModel::enabled()

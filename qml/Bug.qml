@@ -25,7 +25,7 @@ Item {
 
     Component.onCompleted: {
         bugModel.activeBugCollisionChanged.connect(onActiveBugCollisionChanged)
-        bugModel.enabledChanged.connect(onBugEnabledChanged)
+        bugModel.coinsCollectedChanged.connect(onCoinsCollectedChanged)
         bugModel.speedChanged.connect(onSpeedChanged)
         setRandomPosition()
     }
@@ -36,15 +36,11 @@ Item {
         }
     }
 
-    function onBugEnabledChanged() {
-        if (bugModel.enabled) {
-            setRandomPosition()
-            animationTimer.running = true
-            bug.visible = true
-        } else {
-            animationTimer.running = false
-            bugSound.stop()
-            bug.visible = false
+    function onCoinsCollectedChanged() {
+        if (bugModel.coinsCollected > 0) {
+            coinCollectedSound.source = ""
+            coinCollectedSound.source = "../coinhunt-media/coin-collect.wav"
+            coinCollectedSound.play()
         }
     }
 
@@ -164,6 +160,11 @@ Item {
     Audio {
         id: bugSound
         source: "../coinhunt-media/bug-walk.wav"
+    }
+
+    Audio {
+        id: coinCollectedSound
+        source: "../coinhunt-media/coin-collect.wav"
     }
 
     SoundEffect {
