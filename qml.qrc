@@ -42,5 +42,6 @@
         <file>coinhunt-media/cash-register.wav</file>
         <file>coinhunt-media/coin-collect.wav</file>
         <file>qml/Coin.qml</file>
+        <file>qml/CoinIndicator.qml</file>
     </qresource>
 </RCC>

@@ -22,8 +22,7 @@ Window {
 
     Component.onCompleted: {
         setBackground()
-        BugModel1.enabledChanged.connect(onBug1EnabledChanged)
-        BugModel2.enabledChanged.connect(onBug2EnabledChanged)
+        createCoins()
     }
 
     Image {
@@ -60,8 +59,6 @@ Window {
         }
     }
 
-    // TODO: remove life indicators
-    // TODO: new indicator needed: coins collected and level (maybe)
     RowLayout {
         id: layout
         width: mainWindow.width
@@ -71,26 +68,17 @@ Window {
         // stay on top of everything
         z: 1000
         anchors.bottomMargin: 25
-        /*LifeIndicator {
-            id: bug1LifeIndicator
-            model: BugModel1
-            player: GameData.player1
-            imageSource: "../media/ladybug-middle.png"
-            lifeLostAudioSource: "../media/bird-eating.wav"
-            Layout.alignment: Qt.AlignBottom | Qt.AlignHCenter
-        }*/
         TimeLevelIndicator {
             id: timeLevelIndicator
             Layout.alignment: Qt.AlignBottom | Qt.AlignHCenter
         }
-        /*LifeIndicator {
-            id: bug2LifeIndicator
-            model: BugModel2
-            player: GameData.player2
-            imageSource: "../media/ladybug-middle-blue.png"
-            lifeLostAudioSource: "../media/bird-eating.wav"
+        CoinIndicator {
+            id: coinIndicator
+            bugModel1: BugModel1
+            bugModel2: BugModel2
+            imageSource: "../coinhunt-media/coin.png"
             Layout.alignment: Qt.AlignBottom | Qt.AlignHCenter
-        }*/
+        }
     }
 
     Audio {
@@ -102,8 +90,9 @@ Window {
     property double startTime: 0
     property double currentTime: 0
     property int currentLevel: 0
-    property int timeForHuntingAllCoins: 30
-    property int numberOfCoinsPerRound: 50
+    property int levelDuration: 5 * 1000
+    property int numberOfCoinsPerRound: 1
+    property int roundCounter: 0
 
     GameStateMachine {
         id: gameStateMachine
@@ -119,10 +108,10 @@ Window {
         setBackground()
 
         currentLevel = 1
-        // TODO reset timeForHuntingAllCoins
-
-        //timeLevelIndicator.setLevel(currentLevel)
-        //timeLevelIndicator.setTime(currentTime)
+        roundCounter = 1
+        currentTime = levelDuration
+        timeLevelIndicator.setLevel(currentLevel)
+        timeLevelIndicator.setTime(currentTime)
 
         // initialize models
         BugModel1.initialize()
@@ -183,61 +172,72 @@ Window {
         running: false
         repeat: true
         onTriggered: {
-            currentTime = new Date().getTime() - startTime
-            //updateClock()
-            //updateLevel()
-            // TODO: update level - means every level a new coin is added - maybe each 10 level addidional time for collecting the coins is added
+            currentTime = levelDuration - (new Date().getTime() - startTime)
+            if (currentTime <= 0) {
+                checkGameEnd()
+                startNextLevel()
+            }
+            if (gameTimer.running) {
+                startNextCoinRound()
+                timeLevelIndicator.setTime(currentTime)
+            }
         }
     }
 
-    function updateLevel() {
-        // a level ends when all coins ar collected
+    function checkGameEnd() {
+        var totalCoinsCollected = BugModel1.coinsCollected + BugModel2.coinsCollected
+        var maxCoinsCollected = 0
+        for (var i of Functions.range(1, currentLevel)) {
+            maxCoinsCollected += i * numberOfCoinsPerRound
+        }
 
-        /*var newLevel = 1 + Math.floor(currentTime / 1000 / levelDuration)
-        if (newLevel != currentLevel) {
-            timeLevelIndicator.setLevel(newLevel)
-            createBird()
-            currentLevel = newLevel
-        }*/
+        // not all coins were collected - game end :(
+        if (totalCoinsCollected < maxCoinsCollected) {
+            gameStateMachine.signalStopGame()
+        }
     }
 
-    function updateClock() {
+    function startNextCoinRound() {
+        // all coins collected?
+        var allCoinsCollected = true
+        for (var coinIndex = 0; coinIndex < coins.length; coinIndex++) {
+            if (coins[coinIndex].itemActive) {
+                allCoinsCollected = false
+                break
+            }
+        }
+        console.log("allCoinsCollected: " + allCoinsCollected)
+        console.log("roundCounter < currentLevel: " + (roundCounter < currentLevel))
+        if (allCoinsCollected && (roundCounter < currentLevel)) {
+            console.log("BP01: ")
+            roundCounter += 1
+            dropCoins()
+        }
+    }
 
+    function startNextLevel() {
+        currentTime = levelDuration
+        roundCounter = 1
+        currentLevel += 1
+        timeLevelIndicator.setLevel(currentLevel)
+        gameTimer.stop()
+        gameStateMachine.signalStartCountdown()
+    }
+
+    function createCoins() {
+        for (var i = 0; i < numberOfCoinsPerRound; i++) {
+            var newCoin = Qt.createQmlObject('Coin {}', mainWindow, "coins")
+            coins.push(newCoin)
+        }
     }
 
     function dropCoins() {
         coinDropSound.source = ""
         coinDropSound.source = "../coinhunt-media/cash-register.wav"
         coinDropSound.play()
-        for (var i = 0; i < numberOfCoinsPerRound; i++) {
-            var newCoin = Qt.createQmlObject('Coin {}', mainWindow, "coins")
-            coins.push(newCoin)
-            newCoin.itemActive = true
+        for (var coinIndex = 0; coinIndex < coins.length; coinIndex++) {
+            coins[coinIndex].itemActive = true
         }
-    }
-
-    function onBug1EnabledChanged() {
-        /*if (! BugModel1.enabled) {
-            GameData.player1.levelAchieved = currentLevel
-            GameData.player1.timeAchieved = currentTime
-        }
-        checkGameEnd()*/
-    }
-
-    function onBug2EnabledChanged() {
-        /*if (! BugModel2.enabled) {
-            GameData.player2.levelAchieved = currentLevel
-            GameData.player2.timeAchieved = currentTime
-        }
-        checkGameEnd()*/
-    }
-
-    function checkGameEnd() {
-        // game end when time is up and not all coins are collected
-
-        /*if (! BugModel1.enabled && ! BugModel2.enabled) {
-            gameStateMachine.signalStopGame()
-        }*/
     }
 
     // collision detection
