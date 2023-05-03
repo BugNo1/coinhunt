@@ -5,7 +5,7 @@
 #include <QJoysticks.h>
 #include "bugmodel.h"
 #include "common-library/gamedata.h"
-#include "common-library/player_tablemodel.h"
+#include "common-library/player_tablemodel_points.h"
 #include "common-library/mouse_event_filter.h"
 
 int main(int argc, char *argv[])
@@ -13,7 +13,7 @@ int main(int argc, char *argv[])
     qmlRegisterType<BugModel, 1>("BugModel", 1, 0, "BugModel");
     qmlRegisterType<GameData, 1>("GameData", 1, 0, "GameData");
     qmlRegisterType<Player, 1>("Player", 1, 0, "Player");
-    qmlRegisterType<PlayerTableModel, 1>("PlayerItemModel", 1, 0, "PlayerItemModel");
+    qmlRegisterType<PlayerTableModelPoints, 1>("PlayerTableModelPoints", 1, 0, "PlayerTableModelPoints");
 
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
@@ -34,10 +34,10 @@ int main(int argc, char *argv[])
     BugModel* bugmodel2 = new BugModel();
     engine.rootContext()->setContextProperty("BugModel2", bugmodel2);
 
-    PlayerTableModel* playerItemModel = new PlayerTableModel();
-    engine.rootContext()->setContextProperty("HighscoreData", QVariant::fromValue(playerItemModel));
+    PlayerTableModelPoints* playerTableModel = new PlayerTableModelPoints();
+    engine.rootContext()->setContextProperty("HighscoreData", QVariant::fromValue(playerTableModel));
 
-    GameData* gamedata = new GameData(playerItemModel);
+    GameData* gamedata = new GameData(playerTableModel, GameData::GameType::Coop, GameData::HighscoreType::Points);
     engine.rootContext()->setContextProperty("GameData", gamedata);
 
     QString gifpath = "file://" + QCoreApplication::applicationDirPath() + "/gif/";

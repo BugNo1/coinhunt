@@ -154,15 +154,19 @@ Window {
         gameTimer.stop()
         collisionDetectionTimer.stop()
 
+        hideCoins()
+
         // disable collectible items
         //for (var itemIndex = 0; itemIndex < collectibleItems.length; itemIndex++) {
         //    collectibleItems[itemIndex].itemActive = false
         //}
 
+        GameData.player1.pointsAchieved = BugModel1.coinsCollected
+        GameData.player2.pointsAchieved = BugModel2.coinsCollected
         GameData.updateHighscores()
         GameData.saveHighscores()
 
-        overlay = Qt.createQmlObject('import "../common-qml"; GameEndOverlay {}', mainWindow, "overlay")
+        overlay = Qt.createQmlObject('import "../common-qml"; GameEndOverlay { highscoreType: GameEndOverlay.HighscoreType.Coop }', mainWindow, "overlay")
         overlay.signalStart = gameStateMachine.signalResetGame
     }
 
@@ -206,10 +210,7 @@ Window {
                 break
             }
         }
-        console.log("allCoinsCollected: " + allCoinsCollected)
-        console.log("roundCounter < currentLevel: " + (roundCounter < currentLevel))
         if (allCoinsCollected && (roundCounter < currentLevel)) {
-            console.log("BP01: ")
             roundCounter += 1
             dropCoins()
         }
@@ -237,6 +238,12 @@ Window {
         coinDropSound.play()
         for (var coinIndex = 0; coinIndex < coins.length; coinIndex++) {
             coins[coinIndex].itemActive = true
+        }
+    }
+
+    function hideCoins() {
+        for (var coinIndex = 0; coinIndex < coins.length; coinIndex++) {
+            coins[coinIndex].itemActive = false
         }
     }
 

@@ -9,7 +9,7 @@ SOURCES += \
     common-library/gamedata.cpp \
     common-library/mouse_event_filter.cpp \
     common-library/player.cpp \
-    common-library/player_tablemodel.cpp \
+    common-library/player_tablemodel_points.cpp \
     main.cpp
 
 RESOURCES += qml.qrc
@@ -31,10 +31,11 @@ include ($$PWD/QJoysticks/QJoysticks.pri)
 
 HEADERS += \
     bugmodel.h \
+    common-library/abstract_player_tablemodel.h \
     common-library/gamedata.h \
     common-library/mouse_event_filter.h \
     common-library/player.h \
-    common-library/player_tablemodel.h
+    common-library/player_tablemodel_points.h
 
 QMAKE_POST_LINK += $$QMAKE_COPY_DIR $$shell_path($$PWD/common-media/gif) $$shell_path($$OUT_PWD/);
 QMAKE_POST_LINK += $$QMAKE_COPY_DIR $$shell_path($$PWD/coinhunt-media/bg) $$shell_path($$OUT_PWD/);
