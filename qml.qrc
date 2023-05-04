@@ -43,5 +43,7 @@
         <file>coinhunt-media/coin-collect.wav</file>
         <file>qml/Coin.qml</file>
         <file>qml/CoinIndicator.qml</file>
+        <file>coinhunt-media/fanfare.wav</file>
+        <file>coinhunt-media/item-end.wav</file>
     </qresource>
 </RCC>

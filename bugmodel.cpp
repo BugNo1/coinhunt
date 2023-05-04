@@ -7,11 +7,18 @@ BugModel::BugModel(QObject *parent)
 {
 }
 
+BugModel::BugModel(int initialSpeed, QObject *parent)
+    : QObject(parent), m_initialSpeed(initialSpeed)
+{
+    m_speedTimer.setSingleShot(true);
+    connect(&m_speedTimer, SIGNAL(timeout()), this, SLOT(speedTimerSlot()));
+}
+
 void BugModel::initialize()
 {
     setActiveBugCollision(false);
     setEnabled(true);
-    setSpeed(100);
+    setSpeed(m_initialSpeed);
     setCoinsCollected(0);
 }
 
@@ -80,4 +87,16 @@ void BugModel::setSpeed(int speed)
         m_speed = speed;
         emit speedChanged();
     }
+}
+
+void BugModel::startSpeedRun(int speed, int duration)
+{
+    setSpeed(speed);
+    m_speedTimer.start(duration);
+}
+
+void BugModel::speedTimerSlot()
+{
+    setSpeed(m_initialSpeed);
+    emit itemTimerFinished();
 }

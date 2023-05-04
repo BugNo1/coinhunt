@@ -16,6 +16,7 @@ class BugModel : public QObject
 
 public:
     BugModel(QObject *parent=0);
+    BugModel(int initialSpeed, QObject *parent=0);
 
     Q_INVOKABLE void initialize();
 
@@ -31,13 +32,18 @@ public:
     void setEnabled(bool enabled);
 
     int speed();
-    Q_INVOKABLE void setSpeed(int speed);
+    void setSpeed(int speed);
+    Q_INVOKABLE void startSpeedRun(int speed, int duration);
 
 signals:
     void activeBugCollisionChanged();
     void coinsCollectedChanged();
     void enabledChanged();
     void speedChanged();
+    void itemTimerFinished();
+
+public slots:
+    void speedTimerSlot();
 
 private:
     bool m_activeBugCollision;
@@ -45,6 +51,8 @@ private:
     int m_coins;
     bool m_enabled;
     int m_speed;
+    int m_initialSpeed;
+    QTimer m_speedTimer;
 };
 
 #endif // BUGMODEL_H

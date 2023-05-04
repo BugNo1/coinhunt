@@ -16,13 +16,15 @@ Window {
     title: qsTr("Coin Hunt")
 
     property var bugs: [bug1, bug2]
-    property var collectibleItems: []
+    property var collectibleItems: [itemSpeed]
     property var coins: []
     property var overlay
 
     Component.onCompleted: {
         setBackground()
         createCoins()
+        BugModel1.itemTimerFinished.connect(onItemTimerFinished)
+        BugModel2.itemTimerFinished.connect(onItemTimerFinished)
     }
 
     Image {
@@ -32,6 +34,15 @@ Window {
 
     function setBackground() {
         background.source = bgPath + "bg" + (Math.round(Math.random() * 18) + 1).toString().padStart(2, "0") + ".jpg"
+    }
+
+    ItemSpeed {
+        id: itemSpeed
+        itemActive: false
+        minimalSpeed: 150
+        minimalWaitTime: 20000
+        // stay on top of coins
+        z: 1000
     }
 
     Bug {
@@ -86,13 +97,30 @@ Window {
         source: "../coinhunt-media/cash-register.wav"
     }
 
+    Audio {
+        id: allCoinsCollectedSound
+        source: "../coinhunt-media/fanfare.wav"
+    }
+
+    Audio {
+        id: itemTimerFinishedSound
+        source: "../coinhunt-media/item-end.wav"
+    }
+
+    function onItemTimerFinished() {
+        itemTimerFinishedSound.source = ""
+        itemTimerFinishedSound.source = "../coinhunt-media/item-end.wav"
+        itemTimerFinishedSound.play()
+    }
+
     // game logic
     property double startTime: 0
     property double currentTime: 0
     property int currentLevel: 0
-    property int levelDuration: 5 * 1000
-    property int numberOfCoinsPerRound: 1
+    property int levelDuration: 30 * 1000
+    property int numberOfCoinsPerRound: 20
     property int roundCounter: 0
+    property bool allCoinsCollectedForCurrentLevel: false
 
     GameStateMachine {
         id: gameStateMachine
@@ -107,6 +135,7 @@ Window {
 
         setBackground()
 
+        allCoinsCollectedForCurrentLevel = false
         currentLevel = 1
         roundCounter = 1
         currentTime = levelDuration
@@ -143,9 +172,9 @@ Window {
         collisionDetectionTimer.start()
 
         // activate collectible items
-        //for (var itemIndex = 0; itemIndex < collectibleItems.length; itemIndex++) {
-        //    collectibleItems[itemIndex].itemActive = true
-        //}
+        for (var itemIndex = 0; itemIndex < collectibleItems.length; itemIndex++) {
+            collectibleItems[itemIndex].itemActive = true
+        }
     }
 
     function gameStopAction() {
@@ -157,9 +186,9 @@ Window {
         hideCoins()
 
         // disable collectible items
-        //for (var itemIndex = 0; itemIndex < collectibleItems.length; itemIndex++) {
-        //    collectibleItems[itemIndex].itemActive = false
-        //}
+        for (var itemIndex = 0; itemIndex < collectibleItems.length; itemIndex++) {
+            collectibleItems[itemIndex].itemActive = false
+        }
 
         GameData.player1.pointsAchieved = BugModel1.coinsCollected
         GameData.player2.pointsAchieved = BugModel2.coinsCollected
@@ -213,10 +242,16 @@ Window {
         if (allCoinsCollected && (roundCounter < currentLevel)) {
             roundCounter += 1
             dropCoins()
+        } else if (allCoinsCollected && !allCoinsCollectedForCurrentLevel) {
+            allCoinsCollectedForCurrentLevel = true
+            allCoinsCollectedSound.source = ""
+            allCoinsCollectedSound.source = "../coinhunt-media/fanfare.wav"
+            allCoinsCollectedSound.play()
         }
     }
 
     function startNextLevel() {
+        allCoinsCollectedForCurrentLevel = false
         currentTime = levelDuration
         roundCounter = 1
         currentLevel += 1
@@ -281,9 +316,9 @@ Window {
         }
 
         // bug vs. item collision
-        // items: enlarge bug for 10s, stop clock for 10s, turbo speed for 10s
+        // items: enlarge bug for 10s, stop clock for 10s, turbo speed for 10s, clear all coins
 
-        /*for (bugIndex = 0; bugIndex < bugs.length; bugIndex++) {
+        for (bugIndex = 0; bugIndex < bugs.length; bugIndex++) {
             if (bugs[bugIndex].bugModel.enabled) {
                 for (var itemIndex = 0; itemIndex < collectibleItems.length; itemIndex++) {
                     if (collectibleItems[itemIndex].visible) {
@@ -291,24 +326,24 @@ Window {
                         if (colliding) {
                             var condition
                             var action
-                            if (itemIndex === 0) {
+                            /*if (itemIndex === 0) {
                                 // itemInvincibility
                                 condition = ! bugs[bugIndex].bugModel.invincible
                                 action = function func(duration) {bugs[bugIndex].bugModel.startInvincibility(duration * 1000)}
                             } else if (itemIndex === 1) {
                                 // itemExtraLife
                                 condition = bugs[bugIndex].bugModel.lives !== bugs[bugIndex].bugModel.maxLives
-                                action = function func() {bugs[bugIndex].bugModel.updateLives(1)}
-                            } else if (itemIndex === 2) {
+                                action = function func() {bugs[bugIndex].bugModel.updateLives(1)}*/
+                            if (itemIndex === 0) {
                                // itemSpeed
                                condition = true
-                               action = function func(speed) {bugs[bugIndex].bugModel.setSpeed(speed)}
+                               action = function func(speed) {bugs[bugIndex].bugModel.startSpeedRun(speed, 10000)}
                             }
                             collectibleItems[itemIndex].hit(condition, action)
                         }
                     }
                 }
             }
-        }*/
+        }
     }
 }

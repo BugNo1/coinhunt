@@ -4,8 +4,9 @@ import QtQuick.Shapes 1.15
 
 Item {
     id: bug
-    width: 70
-    height: 55
+    width: 127
+    height: 100
+    // large is 253x200
 
     property var sourceFiles: ["../coinhunt-media/robobug-up.png", "../coinhunt-media/robobug-middle.png", "../coinhunt-media/robobug-down.png" ]
     property var bugModel
@@ -15,13 +16,13 @@ Item {
     property real yAxisValue: 0
 
     // used for collision detection (hitbox is a circle)
-    property int hitboxRadius: 20
+    property int hitboxRadius: 50
     property int hitboxX: 0
     property int hitboxY: 0
 
     property int sourceFilesIndex: 0
     property int timerCounter: 0
-    property int maxSpeed: 10
+    property int maxSpeed: 0
 
     Component.onCompleted: {
         bugModel.activeBugCollisionChanged.connect(onActiveBugCollisionChanged)
@@ -50,7 +51,7 @@ Item {
 
     function setRandomPosition() {
         x = Math.round(Math.random() * (mainWindow.width - 200)) + 100
-        y = Math.round(Math.random() * (mainWindow.height - 200)) + 100
+        y = Math.round(Math.random() * (mainWindow.height - 300)) + 100
         hitboxX = x + width / 2
         hitboxY = y + height / 2
     }
@@ -137,14 +138,14 @@ Item {
     function move() {
         var offset = maxSpeed
         // x - stay inside the window
-        if ((!((xAxisValue < 0) && (x + offset < 0))) && (!((xAxisValue >= 0) && (x + offset > mainWindow.width - 30))))
+        if ((!((xAxisValue < 0) && (x + offset < 0))) && (!((xAxisValue >= 0) && (x + offset > mainWindow.width - 90))))
         {
             x += offset * xAxisValue
             hitboxX = x + width / 2
         }
 
         // y - stay inside the window
-        if ((!((yAxisValue < 0) && (y + offset < 0))) && (!((yAxisValue >= 0) && (y + offset > mainWindow.height - 30))))
+        if ((!((yAxisValue < 0) && (y + offset < 0))) && (!((yAxisValue >= 0) && (y + offset > mainWindow.height - 90))))
         {
             y += offset * yAxisValue
             hitboxY = y + height / 2
