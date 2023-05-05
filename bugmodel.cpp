@@ -7,11 +7,13 @@ BugModel::BugModel(QObject *parent)
 {
 }
 
-BugModel::BugModel(int initialSpeed, QObject *parent)
-    : QObject(parent), m_initialSpeed(initialSpeed)
+BugModel::BugModel(int initialSpeed, int initialWidth, int initialHeight, QObject *parent)
+    : QObject(parent), m_initialSpeed(initialSpeed), m_initialWidth(initialWidth), m_initialHeight(initialHeight)
 {
     m_speedTimer.setSingleShot(true);
     connect(&m_speedTimer, SIGNAL(timeout()), this, SLOT(speedTimerSlot()));
+    m_enlargeTimer.setSingleShot(true);
+    connect(&m_enlargeTimer, SIGNAL(timeout()), this, SLOT(enlargeTimerSlot()));
 }
 
 void BugModel::initialize()
@@ -19,6 +21,8 @@ void BugModel::initialize()
     setActiveBugCollision(false);
     setEnabled(true);
     setSpeed(m_initialSpeed);
+    setWidth(m_initialWidth);
+    setHeight(m_initialHeight);
     setCoinsCollected(0);
 }
 
@@ -98,5 +102,45 @@ void BugModel::startSpeedRun(int speed, int duration)
 void BugModel::speedTimerSlot()
 {
     setSpeed(m_initialSpeed);
+    emit itemTimerFinished();
+}
+
+int BugModel::width()
+{
+    return m_width;
+}
+
+void BugModel::setWidth(int width)
+{
+    if (width != m_width) {
+        m_width = width;
+        emit widthChanged();
+    }
+}
+
+int BugModel::height()
+{
+    return m_height;
+}
+
+void BugModel::setHeight(int height)
+{
+    if (height != m_height) {
+        m_height = height;
+        emit heightChanged();
+    }
+}
+
+void BugModel::startEnlargeRun(int width, int height, int duration)
+{
+    setWidth(width);
+    setHeight(height);
+    m_enlargeTimer.start(duration);
+}
+
+void BugModel::enlargeTimerSlot()
+{
+    setWidth(m_initialWidth);
+    setHeight(m_initialHeight);
     emit itemTimerFinished();
 }

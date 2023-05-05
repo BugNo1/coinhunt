@@ -16,7 +16,7 @@ Window {
     title: qsTr("Coin Hunt")
 
     property var bugs: [bug1, bug2]
-    property var collectibleItems: [itemSpeed]
+    property var collectibleItems: [itemSpeed, itemEnlarge]
     property var coins: []
     property var overlay
 
@@ -40,6 +40,14 @@ Window {
         id: itemSpeed
         itemActive: false
         minimalSpeed: 150
+        minimalWaitTime: 20000
+        // stay on top of coins
+        z: 1000
+    }
+
+    ItemEnlarge {
+        id: itemEnlarge
+        itemActive: false
         minimalWaitTime: 20000
         // stay on top of coins
         z: 1000
@@ -316,7 +324,7 @@ Window {
         }
 
         // bug vs. item collision
-        // items: enlarge bug for 10s, stop clock for 10s, turbo speed for 10s, clear all coins
+        // items: enlarge bug for 10s, stop clock for 10s, collect all visible coins
 
         for (bugIndex = 0; bugIndex < bugs.length; bugIndex++) {
             if (bugs[bugIndex].bugModel.enabled) {
@@ -338,7 +346,11 @@ Window {
                                // itemSpeed
                                condition = true
                                action = function func(speed) {bugs[bugIndex].bugModel.startSpeedRun(speed, 10000)}
-                            }
+                            } else if (itemIndex === 1) {
+                                // itemEnlarge
+                                condition = true
+                                action = function func(speed) {bugs[bugIndex].bugModel.startEnlargeRun(253, 200, 10000)}
+                             }
                             collectibleItems[itemIndex].hit(condition, action)
                         }
                     }

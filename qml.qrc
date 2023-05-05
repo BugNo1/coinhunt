@@ -45,5 +45,8 @@
         <file>qml/CoinIndicator.qml</file>
         <file>coinhunt-media/fanfare.wav</file>
         <file>coinhunt-media/item-end.wav</file>
+        <file>common-qml/ItemEnlarge.qml</file>
+        <file>common-media/transformation.wav</file>
+        <file>common-media/loupe.png</file>
     </qresource>
 </RCC>

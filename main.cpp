@@ -28,10 +28,10 @@ int main(int argc, char *argv[])
     QJoysticks *instance = QJoysticks::getInstance();
     engine.rootContext()->setContextProperty("QJoysticks", instance);
 
-    BugModel* bugmodel1 = new BugModel(150);
+    BugModel* bugmodel1 = new BugModel(150, 127, 100);
     engine.rootContext()->setContextProperty("BugModel1", bugmodel1);
 
-    BugModel* bugmodel2 = new BugModel(150);
+    BugModel* bugmodel2 = new BugModel(150, 127, 100);
     engine.rootContext()->setContextProperty("BugModel2", bugmodel2);
 
     PlayerTableModelPoints* playerTableModel = new PlayerTableModelPoints();

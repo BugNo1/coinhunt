@@ -28,6 +28,8 @@ Item {
         bugModel.activeBugCollisionChanged.connect(onActiveBugCollisionChanged)
         bugModel.coinsCollectedChanged.connect(onCoinsCollectedChanged)
         bugModel.speedChanged.connect(onSpeedChanged)
+        bugModel.widthChanged.connect(changeWidth)
+        bugModel.heightChanged.connect(changeHeight)
         setRandomPosition()
     }
 
@@ -49,11 +51,26 @@ Item {
         maxSpeed = Math.round(bugModel.speed / 10)
     }
 
+    function changeWidth() {
+        width = bugModel.width
+        updateHitbox()
+    }
+
+    function changeHeight() {
+        height = bugModel.height
+        updateHitbox()
+    }
+
+    function updateHitbox() {
+        hitboxRadius = height / 2
+        hitboxX = x + width / 2
+        hitboxY = y + height / 2
+    }
+
     function setRandomPosition() {
         x = Math.round(Math.random() * (mainWindow.width - 200)) + 100
         y = Math.round(Math.random() * (mainWindow.height - 300)) + 100
-        hitboxX = x + width / 2
-        hitboxY = y + height / 2
+        updateHitbox()
     }
 
     Timer {
