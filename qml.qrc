@@ -10,7 +10,6 @@
         <file>common-qml/GameEndOverlay.qml</file>
         <file>common-qml/GameStartOverlay.qml</file>
         <file>common-qml/GameStateMachine.qml</file>
-        <file>common-qml/ItemExtraLife.qml</file>
         <file>common-qml/ItemInvincibility.qml</file>
         <file>common-qml/LifeIndicator.qml</file>
         <file>common-qml/PlayerNameInput.qml</file>
@@ -45,8 +44,11 @@
         <file>qml/CoinIndicator.qml</file>
         <file>coinhunt-media/fanfare.wav</file>
         <file>coinhunt-media/item-end.wav</file>
-        <file>common-qml/ItemEnlarge.qml</file>
         <file>common-media/transformation.wav</file>
         <file>common-media/loupe.png</file>
+        <file>common-qml/CollectibleItem.qml</file>
+        <file>common-media/pause.png</file>
+        <file>common-media/clear.png</file>
+        <file>common-media/din-ding.wav</file>
     </qresource>
 </RCC>

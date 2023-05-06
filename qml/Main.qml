@@ -16,7 +16,7 @@ Window {
     title: qsTr("Coin Hunt")
 
     property var bugs: [bug1, bug2]
-    property var collectibleItems: [itemSpeed, itemEnlarge]
+    property var collectibleItems: [itemSpeed, itemEnlarge, itemPause]
     property var coins: []
     property var overlay
 
@@ -38,20 +38,30 @@ Window {
 
     ItemSpeed {
         id: itemSpeed
-        itemActive: false
         minimalSpeed: 150
         minimalWaitTime: 20000
-        // stay on top of coins
-        z: 1000
+        itemActive: false
+        z: 1000 // stay on top of coins
     }
 
-    ItemEnlarge {
+    CollectibleItem {
         id: itemEnlarge
-        itemActive: false
+        itemImageSource: "../common-media/loupe.png"
+        hitSoundSource: "../common-media/transformation.wav"
         minimalWaitTime: 20000
-        // stay on top of coins
-        z: 1000
+        itemActive: false
+        z: 1000 // stay on top of coins
     }
+
+    CollectibleItem {
+        id: itemPause
+        itemImageSource: "../common-media/pause.png"
+        hitSoundSource: "../common-media/din-ding.wav"
+        minimalWaitTime: 2000
+        itemActive: false
+        z: 1000 // stay on top of coins
+    }
+
 
     Bug {
         id: bug1
@@ -129,6 +139,7 @@ Window {
     property int numberOfCoinsPerRound: 20
     property int roundCounter: 0
     property bool allCoinsCollectedForCurrentLevel: false
+    property bool gamePause: false
 
     GameStateMachine {
         id: gameStateMachine
@@ -175,6 +186,7 @@ Window {
 
         dropCoins()
 
+        gamePause = false
         startTime = new Date().getTime()
         gameTimer.start()
         collisionDetectionTimer.start()
@@ -203,7 +215,7 @@ Window {
         GameData.updateHighscores()
         GameData.saveHighscores()
 
-        overlay = Qt.createQmlObject('import "../common-qml"; GameEndOverlay { highscoreType: GameEndOverlay.HighscoreType.Coop }', mainWindow, "overlay")
+        overlay = Qt.createQmlObject('import "../common-qml"; GameEndOverlay { gameType: GameEndOverlay.GameType.Coop }', mainWindow, "overlay")
         overlay.signalStart = gameStateMachine.signalResetGame
     }
 
@@ -213,15 +225,32 @@ Window {
         running: false
         repeat: true
         onTriggered: {
-            currentTime = levelDuration - (new Date().getTime() - startTime)
+            if (gamePause) {
+                startTime = new Date().getTime() - (levelDuration - currentTime)
+            } else {
+                currentTime = levelDuration - (new Date().getTime() - startTime)
+            }
+
             if (currentTime <= 0) {
                 checkGameEnd()
                 startNextLevel()
             }
+
             if (gameTimer.running) {
                 startNextCoinRound()
                 timeLevelIndicator.setTime(currentTime)
             }
+        }
+    }
+
+    Timer {
+        id: gamePauseTimer
+        interval: 10000
+        running: false
+        repeat: false
+        onTriggered: {
+            gamePause = false
+            onItemTimerFinished()
         }
     }
 
@@ -349,8 +378,12 @@ Window {
                             } else if (itemIndex === 1) {
                                 // itemEnlarge
                                 condition = true
-                                action = function func(speed) {bugs[bugIndex].bugModel.startEnlargeRun(253, 200, 10000)}
-                             }
+                                action = function func() {bugs[bugIndex].bugModel.startEnlargeRun(253, 200, 10000)}
+                            } else if (itemIndex === 2) {
+                                // itemPause
+                                condition = true
+                                action = function func() {gamePause = true; gamePauseTimer.start()}
+                            }
                             collectibleItems[itemIndex].hit(condition, action)
                         }
                     }
