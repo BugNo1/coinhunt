@@ -48,7 +48,8 @@
         <file>common-media/loupe.png</file>
         <file>common-qml/CollectibleItem.qml</file>
         <file>common-media/pause.png</file>
-        <file>common-media/clear.png</file>
+        <file>common-media/clean.png</file>
         <file>common-media/din-ding.wav</file>
+        <file>common-media/surprise.wav</file>
     </qresource>
 </RCC>

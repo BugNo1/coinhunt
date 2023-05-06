@@ -16,7 +16,7 @@ Window {
     title: qsTr("Coin Hunt")
 
     property var bugs: [bug1, bug2]
-    property var collectibleItems: [itemSpeed, itemEnlarge, itemPause]
+    property var collectibleItems: [itemSpeed, itemEnlarge, itemPause, itemClean]
     property var coins: []
     property var overlay
 
@@ -39,7 +39,7 @@ Window {
     ItemSpeed {
         id: itemSpeed
         minimalSpeed: 150
-        minimalWaitTime: 20000
+        minimalWaitTime: 30000
         itemActive: false
         z: 1000 // stay on top of coins
     }
@@ -48,7 +48,7 @@ Window {
         id: itemEnlarge
         itemImageSource: "../common-media/loupe.png"
         hitSoundSource: "../common-media/transformation.wav"
-        minimalWaitTime: 20000
+        minimalWaitTime: 30000
         itemActive: false
         z: 1000 // stay on top of coins
     }
@@ -57,11 +57,19 @@ Window {
         id: itemPause
         itemImageSource: "../common-media/pause.png"
         hitSoundSource: "../common-media/din-ding.wav"
-        minimalWaitTime: 2000
+        minimalWaitTime: 30000
         itemActive: false
         z: 1000 // stay on top of coins
     }
 
+    CollectibleItem {
+        id: itemClean
+        itemImageSource: "../common-media/clean.png"
+        hitSoundSource: "../common-media/surprise.wav"
+        minimalWaitTime: 30000
+        itemActive: false
+        z: 1000 // stay on top of coins
+    }
 
     Bug {
         id: bug1
@@ -319,6 +327,17 @@ Window {
         }
     }
 
+    function cleanCoins(bugModel) {
+        var activeCoins = 0
+        for (var coinIndex = 0; coinIndex < coins.length; coinIndex++) {
+            if (coins[coinIndex].itemActive) {
+                coins[coinIndex].itemActive = false
+                activeCoins += 1
+            }
+        }
+        bugModel.coinsCollected = bugModel.coinsCollected + activeCoins
+    }
+
     // collision detection
     Timer {
         id: collisionDetectionTimer
@@ -353,8 +372,6 @@ Window {
         }
 
         // bug vs. item collision
-        // items: enlarge bug for 10s, stop clock for 10s, collect all visible coins
-
         for (bugIndex = 0; bugIndex < bugs.length; bugIndex++) {
             if (bugs[bugIndex].bugModel.enabled) {
                 for (var itemIndex = 0; itemIndex < collectibleItems.length; itemIndex++) {
@@ -363,14 +380,6 @@ Window {
                         if (colliding) {
                             var condition
                             var action
-                            /*if (itemIndex === 0) {
-                                // itemInvincibility
-                                condition = ! bugs[bugIndex].bugModel.invincible
-                                action = function func(duration) {bugs[bugIndex].bugModel.startInvincibility(duration * 1000)}
-                            } else if (itemIndex === 1) {
-                                // itemExtraLife
-                                condition = bugs[bugIndex].bugModel.lives !== bugs[bugIndex].bugModel.maxLives
-                                action = function func() {bugs[bugIndex].bugModel.updateLives(1)}*/
                             if (itemIndex === 0) {
                                // itemSpeed
                                condition = true
@@ -383,6 +392,10 @@ Window {
                                 // itemPause
                                 condition = true
                                 action = function func() {gamePause = true; gamePauseTimer.start()}
+                            } else if (itemIndex === 3) {
+                                // itemClean
+                                condition = true
+                                action = function func() {cleanCoins(bugs[bugIndex].bugModel)}
                             }
                             collectibleItems[itemIndex].hit(condition, action)
                         }
