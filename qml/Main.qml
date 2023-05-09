@@ -30,6 +30,7 @@ Window {
     Image {
         id: background
         anchors.fill: parent
+        z: -2
     }
 
     function setBackground() {
@@ -41,7 +42,6 @@ Window {
         minimalSpeed: 150
         minimalWaitTime: 30000
         itemActive: false
-        z: 1000 // stay on top of coins
     }
 
     CollectibleItem {
@@ -50,7 +50,6 @@ Window {
         hitSoundSource: "../common-media/transformation.wav"
         minimalWaitTime: 30000
         itemActive: false
-        z: 1000 // stay on top of coins
     }
 
     CollectibleItem {
@@ -59,7 +58,6 @@ Window {
         hitSoundSource: "../common-media/din-ding.wav"
         minimalWaitTime: 30000
         itemActive: false
-        z: 1000 // stay on top of coins
     }
 
     CollectibleItem {
@@ -68,7 +66,6 @@ Window {
         hitSoundSource: "../common-media/surprise.wav"
         minimalWaitTime: 30000
         itemActive: false
-        z: 1000 // stay on top of coins
     }
 
     Bug {
@@ -148,6 +145,7 @@ Window {
     property int roundCounter: 0
     property bool allCoinsCollectedForCurrentLevel: false
     property bool gamePause: false
+    property bool itemCollisionEnabled: false
 
     GameStateMachine {
         id: gameStateMachine
@@ -184,6 +182,8 @@ Window {
     function gameCountdownAction() {
         console.log("Starting countdown...")
 
+        itemCollisionEnabled = false
+
         GameData.savePlayerNames()
         overlay = Qt.createQmlObject('import "../common-qml"; CountdownOverlay {}', mainWindow, "overlay")
         overlay.signalStart = gameStateMachine.signalStartGame
@@ -198,6 +198,8 @@ Window {
         startTime = new Date().getTime()
         gameTimer.start()
         collisionDetectionTimer.start()
+
+        itemCollisionEnabled = true
 
         // activate collectible items
         for (var itemIndex = 0; itemIndex < collectibleItems.length; itemIndex++) {
@@ -308,6 +310,7 @@ Window {
     function createCoins() {
         for (var i = 0; i < numberOfCoinsPerRound; i++) {
             var newCoin = Qt.createQmlObject('Coin {}', mainWindow, "coins")
+            newCoin.z = -1 // only the bg is lower
             coins.push(newCoin)
         }
     }
@@ -372,32 +375,34 @@ Window {
         }
 
         // bug vs. item collision
-        for (bugIndex = 0; bugIndex < bugs.length; bugIndex++) {
-            if (bugs[bugIndex].bugModel.enabled) {
-                for (var itemIndex = 0; itemIndex < collectibleItems.length; itemIndex++) {
-                    if (collectibleItems[itemIndex].visible) {
-                        colliding = Functions.detectCollisionCircleCircle(bugs[bugIndex], collectibleItems[itemIndex])
-                        if (colliding) {
-                            var condition
-                            var action
-                            if (itemIndex === 0) {
-                               // itemSpeed
-                               condition = true
-                               action = function func(speed) {bugs[bugIndex].bugModel.startSpeedRun(speed, 10000)}
-                            } else if (itemIndex === 1) {
-                                // itemEnlarge
-                                condition = true
-                                action = function func() {bugs[bugIndex].bugModel.startEnlargeRun(253, 200, 10000)}
-                            } else if (itemIndex === 2) {
-                                // itemPause
-                                condition = true
-                                action = function func() {gamePause = true; gamePauseTimer.start()}
-                            } else if (itemIndex === 3) {
-                                // itemClean
-                                condition = true
-                                action = function func() {cleanCoins(bugs[bugIndex].bugModel)}
+        if (itemCollisionEnabled) {
+            for (bugIndex = 0; bugIndex < bugs.length; bugIndex++) {
+                if (bugs[bugIndex].bugModel.enabled) {
+                    for (var itemIndex = 0; itemIndex < collectibleItems.length; itemIndex++) {
+                        if (collectibleItems[itemIndex].visible) {
+                            colliding = Functions.detectCollisionCircleCircle(bugs[bugIndex], collectibleItems[itemIndex])
+                            if (colliding) {
+                                var condition
+                                var action
+                                if (itemIndex === 0) {
+                                   // itemSpeed
+                                   condition = true
+                                   action = function func(speed) {bugs[bugIndex].bugModel.startSpeedRun(speed, 10000)}
+                                } else if (itemIndex === 1) {
+                                    // itemEnlarge
+                                    condition = true
+                                    action = function func() {bugs[bugIndex].bugModel.startEnlargeRun(253, 200, 10000)}
+                                } else if (itemIndex === 2) {
+                                    // itemPause
+                                    condition = true
+                                    action = function func() {gamePause = true; gamePauseTimer.start()}
+                                } else if (itemIndex === 3) {
+                                    // itemClean
+                                    condition = true
+                                    action = function func() {cleanCoins(bugs[bugIndex].bugModel)}
+                                }
+                                collectibleItems[itemIndex].hit(condition, action)
                             }
-                            collectibleItems[itemIndex].hit(condition, action)
                         }
                     }
                 }
