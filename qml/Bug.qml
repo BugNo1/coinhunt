@@ -24,6 +24,8 @@ Item {
     property int timerCounter: 0
     property int maxSpeed: 0
 
+    property int lastCoinsCollected: 0
+
     Component.onCompleted: {
         bugModel.activeBugCollisionChanged.connect(onActiveBugCollisionChanged)
         bugModel.coinsCollectedChanged.connect(onCoinsCollectedChanged)
@@ -41,8 +43,14 @@ Item {
 
     function onCoinsCollectedChanged() {
         if (bugModel.coinsCollected > 0) {
-            coinCollectedSound.source = ""
-            coinCollectedSound.source = "../coinhunt-media/coin-collect.wav"
+            if (bugModel.coinsCollected - lastCoinsCollected == 1) {
+                coinCollectedSound.source = ""
+                coinCollectedSound.source = "../coinhunt-media/coin-collect.wav"
+            } else {
+                coinCollectedSound.source = ""
+                coinCollectedSound.source = "../coinhunt-media/moving-coin.wav"
+            }
+            lastCoinsCollected = bugModel.coinsCollected
             coinCollectedSound.play()
         }
     }

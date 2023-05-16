@@ -16,14 +16,11 @@
         <file>common-qml/TimeLevelIndicator.qml</file>
         <file>common-media/countdown-end.wav</file>
         <file>common-media/countdown.wav</file>
-        <file>common-media/extra-life.png</file>
         <file>common-media/highscore-music.mp3</file>
         <file>common-media/highscore.png</file>
         <file>common-media/highscore.wav</file>
         <file>common-media/impact.wav</file>
-        <file>common-media/invincible.wav</file>
         <file>common-media/item-drop.wav</file>
-        <file>common-media/life-gained.wav</file>
         <file>common-media/protection.png</file>
         <file>common-media/speed-sign.png</file>
         <file>common-media/win.wav</file>
@@ -51,5 +48,7 @@
         <file>common-media/clean.png</file>
         <file>common-media/din-ding.wav</file>
         <file>common-media/surprise.wav</file>
+        <file>qml/MovingCoin.qml</file>
+        <file>coinhunt-media/moving-coin.wav</file>
     </qresource>
 </RCC>

@@ -37,6 +37,11 @@ Window {
         background.source = bgPath + "bg" + (Math.round(Math.random() * 18) + 1).toString().padStart(2, "0") + ".jpg"
     }
 
+    MovingCoin {
+        id: movingCoin
+        minimalWaitTime: 20000
+    }
+
     ItemSpeed {
         id: itemSpeed
         minimalSpeed: 150
@@ -183,6 +188,7 @@ Window {
         console.log("Starting countdown...")
 
         itemCollisionEnabled = false
+        movingCoin.itemActive = false
 
         GameData.savePlayerNames()
         overlay = Qt.createQmlObject('import "../common-qml"; CountdownOverlay {}', mainWindow, "overlay")
@@ -205,6 +211,8 @@ Window {
         for (var itemIndex = 0; itemIndex < collectibleItems.length; itemIndex++) {
             collectibleItems[itemIndex].itemActive = true
         }
+
+        movingCoin.itemActive = true
     }
 
     function gameStopAction() {
@@ -405,6 +413,17 @@ Window {
                             }
                         }
                     }
+                }
+            }
+        }
+
+        // bug vs. moving coin collision
+        for (bugIndex = 0; bugIndex < bugs.length; bugIndex++) {
+            if (movingCoin.itemActive) {
+                colliding = Functions.detectCollisionCircleCircle(bugs[bugIndex], movingCoin)
+                if (colliding) {
+                    bugs[bugIndex].bugModel.coinsCollected = bugs[bugIndex].bugModel.coinsCollected + numberOfCoinsPerRound
+                    movingCoin.itemActive = false
                 }
             }
         }
