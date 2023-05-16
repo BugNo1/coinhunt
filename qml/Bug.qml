@@ -46,10 +46,14 @@ Item {
             if (bugModel.coinsCollected - lastCoinsCollected == 1) {
                 coinCollectedSound.source = ""
                 coinCollectedSound.source = "../coinhunt-media/coin-collect.wav"
-            } else {
+            } else if (bugModel.coinsCollected - lastCoinsCollected < 100){
                 coinCollectedSound.source = ""
                 coinCollectedSound.source = "../coinhunt-media/moving-coin.wav"
+            } else {
+                coinCollectedSound.source = ""
+                coinCollectedSound.source = "../common-media/explosion.wav"
             }
+
             lastCoinsCollected = bugModel.coinsCollected
             coinCollectedSound.play()
         }

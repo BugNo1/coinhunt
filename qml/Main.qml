@@ -16,7 +16,7 @@ Window {
     title: qsTr("Coin Hunt")
 
     property var bugs: [bug1, bug2]
-    property var collectibleItems: [itemSpeed, itemEnlarge, itemPause, itemClean]
+    property var collectibleItems: [itemSpeed, itemEnlarge, itemPause, itemClean, itemChest]
     property var coins: []
     property var overlay
 
@@ -70,6 +70,14 @@ Window {
         itemImageSource: "../common-media/clean.png"
         hitSoundSource: "../common-media/surprise.wav"
         minimalWaitTime: 30000
+        itemActive: false
+    }
+
+    CollectibleItem {
+        id: itemChest
+        itemImageSource: "../common-media/treasure-chest.png"
+        hitSoundSource: ""
+        minimalWaitTime: 60000
         itemActive: false
     }
 
@@ -151,6 +159,7 @@ Window {
     property bool allCoinsCollectedForCurrentLevel: false
     property bool gamePause: false
     property bool itemCollisionEnabled: false
+    property int chestCollisionCounter: 0
 
     GameStateMachine {
         id: gameStateMachine
@@ -165,6 +174,7 @@ Window {
 
         setBackground()
 
+        chestCollisionCounter = 0
         allCoinsCollectedForCurrentLevel = false
         currentLevel = 1
         roundCounter = 1
@@ -408,6 +418,11 @@ Window {
                                     // itemClean
                                     condition = true
                                     action = function func() {cleanCoins(bugs[bugIndex].bugModel)}
+                                } else if (itemIndex === 4) {
+                                    // itemChest
+                                    chestCollisionCounter += 1
+                                    condition = chestCollisionCounter >= 167 // about 5 secons
+                                    action = function func() {chestCollisionCounter = 0; bugs[bugIndex].bugModel.coinsCollected = bugs[bugIndex].bugModel.coinsCollected + (numberOfCoinsPerRound * 5)}
                                 }
                                 collectibleItems[itemIndex].hit(condition, action)
                             }

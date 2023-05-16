@@ -50,5 +50,7 @@
         <file>common-media/surprise.wav</file>
         <file>qml/MovingCoin.qml</file>
         <file>coinhunt-media/moving-coin.wav</file>
+        <file>common-media/treasure-chest.png</file>
+        <file>common-media/explosion.wav</file>
     </qresource>
 </RCC>

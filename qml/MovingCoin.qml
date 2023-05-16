@@ -16,7 +16,7 @@ Item {
     property int hitboxX: 0
     property int hitboxY: 0
 
-    property int animationDuration: 1500
+    property int animationDuration: 2000
     property int nextAnimationInterval: 0
     property int targetX: 0
     property int targetY: 0
