@@ -46,16 +46,17 @@ Item {
             if (bugModel.coinsCollected - lastCoinsCollected == 1) {
                 coinCollectedSound.source = ""
                 coinCollectedSound.source = "../coinhunt-media/coin-collect.wav"
+                coinCollectedSound.play()
             } else if (bugModel.coinsCollected - lastCoinsCollected < 100){
-                coinCollectedSound.source = ""
-                coinCollectedSound.source = "../coinhunt-media/moving-coin.wav"
+                movingCoinCollectedSound.source = ""
+                movingCoinCollectedSound.source = "../coinhunt-media/moving-coin.wav"
+                movingCoinCollectedSound.play()
             } else {
-                coinCollectedSound.source = ""
-                coinCollectedSound.source = "../common-media/explosion.wav"
+                chestCollectedSound.source = ""
+                chestCollectedSound.source = "../common-media/explosion.wav"
+                chestCollectedSound.play()
             }
-
             lastCoinsCollected = bugModel.coinsCollected
-            coinCollectedSound.play()
         }
     }
 
@@ -195,6 +196,16 @@ Item {
     Audio {
         id: coinCollectedSound
         source: "../coinhunt-media/coin-collect.wav"
+    }
+
+    Audio {
+        id: movingCoinCollectedSound
+        source: "../coinhunt-media/moving-coin.wav"
+    }
+
+    Audio {
+        id: chestCollectedSound
+        source: "../coinhunt-media/explosion.wav"
     }
 
     SoundEffect {

@@ -160,6 +160,7 @@ Window {
     property bool gamePause: false
     property bool itemCollisionEnabled: false
     property int chestCollisionCounter: 0
+    property int extraCoins: 0
 
     GameStateMachine {
         id: gameStateMachine
@@ -174,6 +175,7 @@ Window {
 
         setBackground()
 
+        extraCoins = 0
         chestCollisionCounter = 0
         allCoinsCollectedForCurrentLevel = false
         currentLevel = 1
@@ -290,7 +292,7 @@ Window {
         }
 
         // not all coins were collected - game end :(
-        if (totalCoinsCollected < maxCoinsCollected) {
+        if (totalCoinsCollected < (maxCoinsCollected + extraCoins)) {
             gameStateMachine.signalStopGame()
         }
     }
@@ -422,7 +424,12 @@ Window {
                                     // itemChest
                                     chestCollisionCounter += 1
                                     condition = chestCollisionCounter >= 167 // about 5 secons
-                                    action = function func() {chestCollisionCounter = 0; bugs[bugIndex].bugModel.coinsCollected = bugs[bugIndex].bugModel.coinsCollected + (numberOfCoinsPerRound * 5)}
+                                    action = function func() {
+                                        chestCollisionCounter = 0;
+                                        var coins = numberOfCoinsPerRound * 5;
+                                        bugs[bugIndex].bugModel.coinsCollected = bugs[bugIndex].bugModel.coinsCollected + coins;
+                                        extraCoins = extraCoins + coins
+                                    }
                                 }
                                 collectibleItems[itemIndex].hit(condition, action)
                             }
@@ -439,6 +446,7 @@ Window {
                 if (colliding) {
                     bugs[bugIndex].bugModel.coinsCollected = bugs[bugIndex].bugModel.coinsCollected + numberOfCoinsPerRound
                     movingCoin.itemActive = false
+                    extraCoins = extraCoins + numberOfCoinsPerRound
                 }
             }
         }
