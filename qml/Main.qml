@@ -234,6 +234,7 @@ Window {
         collisionDetectionTimer.stop()
 
         hideCoins()
+        movingCoin.itemActive = false
 
         // disable collectible items
         for (var itemIndex = 0; itemIndex < collectibleItems.length; itemIndex++) {
